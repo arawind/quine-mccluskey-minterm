@@ -4,6 +4,9 @@
 
 mintermArray=input("Enter minterms seperated by a \',\'") #minterms as an array
 
+mintermArray=list(set(mintermArray));
+mintermArray.sort();
+
 #parse minterms, find number of bits
 numBits=0
 maxMinterm=max(mintermArray)
