@@ -3,10 +3,26 @@
 #http://arawind.com
 
 mintermArray=input("Enter minterms seperated by a \',\'") #minterms as an array
+dontCareArray = input("Enter donot care terms sep by a \',\'") #dontcare terms
 
-mintermArray=list(set(mintermArray));
-mintermArray.sort();
+mintermArray=list(set(mintermArray))
+mintermArray.sort()
 
+dontCareArray =list(set(dontCareArray))
+dontCareArray.sort()
+
+#check for errors
+
+#error1: term will take dontCareArray as a higher preference if it exists in both mintermArray and dontCareArray
+  mintermArray= list(set(mintermArray).difference(dontCareArray))
+  #print mintermArray
+#end errors
+
+#print mintermArray
+#print dontCareArray
+mintermArray = list(set(mintermArray+dontCareArray))
+mintermArray.sort()
+#print mintermArray;
 #parse minterms, find number of bits
 numBits=0
 maxMinterm=max(mintermArray)
