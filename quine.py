@@ -178,11 +178,22 @@ for columnNumber in range(0,20):
         break
 
 
+##################### make table for prime implicants
+mintermArrayWdc= list(set(mintermArray).difference(dontCareArray)) #to get minterms without dont care terms
+#those will be your columns
+primeImplicants=[]
+for x in columns:
+    for y in x.groupArray:
+        for z in y.terms:
+            if (not z.dontCare) and (not z.tick):
+                primeImplicants.append(z)
+for x in primeImplicants:
+    print '%15s %10s ' % (','.join(map(str,x.decimals[0])), x.bits)
 
-###### Prime essentials
+###### essential prime implicants
 
-
-
+for x in primeImplicants:
+    if(
 
 
 
