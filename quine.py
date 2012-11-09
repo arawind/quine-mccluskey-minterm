@@ -285,10 +285,11 @@ i=0
 for x in primeImplicants:
     print '%15s %10s' % (','.join(map(str,x.decimals[0])), x.bits),
     for j in range(0,len(mintermArrayWdc)):
-        if i in columnCover[j]:
-           print '%5s'%('x'),
-        else:
-           print '%5s'%(''),
+        if len(columnCover[j])>1:           
+            if i in columnCover[j]:
+               print '%5s'%('x'),
+            else:
+               print '%5s'%(''),
     i=i+1
     print ''
 ##Show Solutions
