@@ -178,6 +178,14 @@ for columnNumber in range(0,20):
         break
 
 
+
+###### Prime essentials
+
+
+
+
+
+
 #display
 for x in columns:
     print 'Column: %s' %x.columnNum
