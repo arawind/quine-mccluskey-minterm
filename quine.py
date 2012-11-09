@@ -1,4 +1,4 @@
-#Quine McKluskey Algorithm
+#Quine McCluskey Algorithm
 #Implemented by Aravind Pedapudi
 #http://arawind.com
 
@@ -14,8 +14,8 @@ dontCareArray.sort()
 #check for errors
 
 #error1: term will take dontCareArray as a higher preference if it exists in both mintermArray and dontCareArray
-  mintermArray= list(set(mintermArray).difference(dontCareArray))
-  #print mintermArray
+mintermArray= list(set(mintermArray).difference(dontCareArray))
+#print mintermArray
 #end errors
 
 #print mintermArray
@@ -56,15 +56,17 @@ class minterm:
     tick=0
     bits=[]
     decimals=[]
+    dontCare=False
     def getNumOnes(self,term):
         return (term).count('1')    
-    def __init__(self,term,column,decimals):
+    def __init__(self,term,column,decimals,dcare):
+        decimals.sort()
         self.decimals=[]
         self.bits=term
         self.column=column
         self.numOnes=self.getNumOnes(term)
         self.decimals.append(decimals)
-
+        self.dontCare=dcare
 #groups object
 class groups:
     columnNum=0
@@ -118,7 +120,12 @@ for columnNumber in range(0,20):
     columns.append(column(columnNumber))
     for x in range(0,len(binArrays[columnNumber])):
         y=binArrays[columnNumber][x]
-        columns[columnNumber].addElement(minterm(y,columnNumber,decArray[x]))
+        dcare=True
+        for elem in decArray[x]:    #decArray is an array with elements like this [1,2,5,7] or [4]
+            if elem not in dontCareArray:
+                dcare=False
+        columns[columnNumber].addElement(minterm(y,columnNumber,decArray[x],dcare))
+        # print decArray[x]
 
     binArray=[]
     decArray=[]
@@ -156,16 +163,14 @@ for columnNumber in range(0,20):
                                         tempDec.append(y)
                                 else:
                                     tempDec.append(x)
-                                                    
-                            #tempDec.sort()
-                            
-                            
+                            tempDec.sort()
                             tempbits= list(element1.bits)
                             tempbits[bitNum]='-'
                             tempbits = "".join(tempbits)
-                            binArray.append(tempbits)
-
-                            decArray.append(tempDec)
+                            print tempDec
+                            if tempDec not in decArray:
+                                binArray.append(tempbits)
+                                decArray.append(tempDec)
                             #print(tempDec)
     binArrays.append(binArray)
     if not combinations:
@@ -180,7 +185,7 @@ for x in columns:
         if(len(y.terms)>0):
             print '-----------------------------------------------------------' 
         for z in y.terms:
-            print '%15s %10s %10s' % (','.join(map(str,z.decimals[0])),z.bits,z.tick)
+            print '%15s %10s %10s %10s' % (','.join(map(str,z.decimals[0])),z.bits,'+' if z.tick else '-','D' if z.dontCare  else '-')
 
 
 ##            #making column1 and probably iterate this over and over                        
@@ -188,16 +193,3 @@ for x in columns:
 ##            for x in binArrays[1]:
 ##                #print(x)
 ##                columns[1].addElement(minterm(x,1))
-                    
-    
-
-
-
-
-
-
-
-
-
-
-
