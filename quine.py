@@ -4,8 +4,11 @@
 
 import petricks
 
-mintermArray=input("Enter minterms seperated by a \',\'") #minterms as an array
-dontCareArray = input("Enter donot care terms sep by a \',\'") #dontcare terms
+mintermArray=input("Enter minterms seperated by a \',\': ") #minterms as an array
+dcYorN=raw_input('Don\'t care terms? (y/N) ')
+dontCareArray=[]
+if dcYorN or dcYorN=='y' or dcYorN=='Y':
+  dontCareArray = input("Enter donot care terms sep by a \',\'") #dontcare terms
 
 mintermArray=list(set(mintermArray))
 mintermArray.sort()
@@ -272,18 +275,50 @@ print ''
 print 'Removing Essential Prime Implicants'
 print '-----------------------------------------------------------' 
 print '%15s %10s' % ('',''), 
-for minterm in mintermArrayWdc:
-    print '%5s'%(minterm), 
+for j in range(0,len(mintermArrayWdc)):
+  if len(columnCover[j])>1:
+     print '%5s'%(mintermArrayWdc[j]),
+  else:
+     print '',
 print('')
-for y in primeImplicantPos:
-    for x in y: 
-      print '%15s %10s' % (','.join(map(str,primeImplicants[x].decimals[0])), primeImplicants[x].bits),
-      for j in range(0,len(mintermArrayWdc)):
-          if x in columnCover[j]:
-             print '%5s'%('x'),
-          else:
-             print '%5s'%(''),
-      print ''
+i=0
+for x in primeImplicants:
+    print '%15s %10s' % (','.join(map(str,x.decimals[0])), x.bits),
+    for j in range(0,len(mintermArrayWdc)):
+        if i in columnCover[j]:
+           print '%5s'%('x'),
+        else:
+           print '%5s'%(''),
+    i=i+1
+    print ''
+##Show Solutions
+print ''
+print ''
+if len(solutions)>1:
+  print 'Solutions:'
+else:
+  print 'Solution:'
+print '-----------------------------------------------------------' 
+i=0
+alphabets=[chr(code) for code in range(ord('a'),ord('z'))]
+solutionAlphs=[]
+for solution in solutions:
+    print 'Solution #%d'%(i+1)
+    alphTerms=[]
+    for term in solution:
+        alphTerm = []
+        for j in range(0,numBits):
+            if term.bits[j] == '1':
+               alphTerm.append(alphabets[j])
+            elif term.bits[j] == '0':
+               alphTerm.append(alphabets[j]+'\'')
+            elif term.bits[j]=='-':
+               pass
+        alphTerms.append(''.join(alphTerm))
+    print "%s" %(' + '.join(map(str,alphTerms)))
+    print ''
+    i=i+1
+    solutionAlphs.append(alphTerms)
 
 ##            #making column1 and probably iterate this over and over                        
 ##            columns.append(column(1))
