@@ -12,9 +12,9 @@ def main():
       orArray.sort()
       if orArray not in andArray:
          andArray.append(orArray)    
-    petrick = petricks(andArray);
+    petrick = init(andArray);
     return petrick
-class petricks:
+class init:
   #n=0
   andArray=[]
   finalArray=[]
@@ -34,7 +34,7 @@ class petricks:
          andArray.append(orArray)
     """
     andArray2=andArray
-    print andArray
+    #print andArray
     def removeY(array):     #remove terms which are in the form of X+XY from orArray structures, array parameter must be [[1,2],[1,2,5,6]]
       array2=[]
       for i in range(0,len(array)):
@@ -107,6 +107,7 @@ class petricks:
       return andArray
     while len(andArray)>1:  
       andArray = multiply(andArray)
-      print andArray
+      #print andArray
+    return andArray
 if __name__ == '__main__':
   main()

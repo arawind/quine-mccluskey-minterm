@@ -2,6 +2,8 @@
 #Implemented by Aravind Pedapudi
 #http://arawind.com
 
+import petricks
+
 mintermArray=input("Enter minterms seperated by a \',\'") #minterms as an array
 dontCareArray = input("Enter donot care terms sep by a \',\'") #dontcare terms
 
@@ -167,7 +169,7 @@ for columnNumber in range(0,20):
                             tempbits= list(element1.bits)
                             tempbits[bitNum]='-'
                             tempbits = "".join(tempbits)
-                            print tempDec
+                            #print tempDec
                             if tempDec not in decArray:
                                 binArray.append(tempbits)
                                 decArray.append(tempDec)
@@ -187,16 +189,58 @@ for x in columns:
         for z in y.terms:
             if (not z.dontCare) and (not z.tick):
                 primeImplicants.append(z)
-for x in primeImplicants:
-    print '%15s %10s ' % (','.join(map(str,x.decimals[0])), x.bits)
-
 ###### essential prime implicants
+essentialPrimePos=[]
+i=0
+columnCover=[0 for x in range(0,len(mintermArrayWdc))]
+j=0
+primeImplicantPos=[]
+for x in mintermArrayWdc:
+    i=0
+    temp=[]
+    for y in primeImplicants:
+        if x in y.decimals[0]:
+           temp.append(i)   
+        i=i+1
+    columnCover[j]=list(temp)
+    if len(columnCover[j])==1:
+       essentialPrimePos.append(columnCover[j][0])
+    else:
+       primeImplicantPos.append(list(columnCover[j]))
+    j=j+1  
 
-for x in primeImplicants:
-    if(
+petrick = petricks.init(primeImplicantPos)
+finalArray = petrick.finalArray[0]
+def lenMapper(array):
+    if not isinstance(array,list):
+       return 1
+    else:
+       return len(array)
+lengthOfFinalArray=map(lenMapper,finalArray)
+minLength=min(lengthOfFinalArray)
+minimals=[]
+for i in finalArray:
+    if isinstance(i,list):
+       if len(i)==minLength:
+          minimals.append(i)
+    else:
+       temp=[]
+       temp.append(i)
+       minimals.append(list(temp))
+
+####multiple solutions
+solutions=[]
+for minimal in minimals:
+    solution=[]
+    for espos in essentialPrimePos:
+        solution.append(primeImplicants[espos])
+
+    for pos in minimal:
+        solution.append(primeImplicants[pos])
+    solutions.append(solution)
 
 
-
+print ''
 #display
 for x in columns:
     print 'Column: %s' %x.columnNum
@@ -205,7 +249,41 @@ for x in columns:
             print '-----------------------------------------------------------' 
         for z in y.terms:
             print '%15s %10s %10s %10s' % (','.join(map(str,z.decimals[0])),z.bits,'+' if z.tick else '-','D' if z.dontCare  else '-')
+            
+print ''
 
+print 'Prime Implicants Table: '
+print '-----------------------------------------------------------' 
+print '%15s %10s' % ('',''), 
+for minterm in mintermArrayWdc:
+    print '%5s'%(minterm), 
+print('')
+i=0
+for x in primeImplicants:
+    print '%15s %10s' % (','.join(map(str,x.decimals[0])), x.bits),
+    for j in range(0,len(mintermArrayWdc)):
+        if i in columnCover[j]:
+           print '%5s'%('x'),
+        else:
+           print '%5s'%(''),
+    i=i+1
+    print ''
+print ''
+print 'Removing Essential Prime Implicants'
+print '-----------------------------------------------------------' 
+print '%15s %10s' % ('',''), 
+for minterm in mintermArrayWdc:
+    print '%5s'%(minterm), 
+print('')
+for y in primeImplicantPos:
+    for x in y: 
+      print '%15s %10s' % (','.join(map(str,primeImplicants[x].decimals[0])), primeImplicants[x].bits),
+      for j in range(0,len(mintermArrayWdc)):
+          if x in columnCover[j]:
+             print '%5s'%('x'),
+          else:
+             print '%5s'%(''),
+      print ''
 
 ##            #making column1 and probably iterate this over and over                        
 ##            columns.append(column(1))
