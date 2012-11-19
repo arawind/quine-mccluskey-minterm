@@ -7,8 +7,12 @@ import petricks
 mintermArray=input("Enter minterms seperated by a \',\': ") #minterms as an array
 dcYorN=raw_input('Don\'t care terms? (y/N) ')
 dontCareArray=[]
-if dcYorN or dcYorN=='y' or dcYorN=='Y':
+if dcYorN=='y' or dcYorN=='Y':
   dontCareArray = input("Enter donot care terms sep by a \',\'") #dontcare terms
+
+startChar = raw_input("Enter starting character for solution (default - 'a') "); #startCharacter
+if not startChar:
+   startChar = 'a'
 
 mintermArray=list(set(mintermArray))
 mintermArray.sort()
@@ -120,7 +124,7 @@ def checkOnes(term1,term2):
         ok=False
     return ok
 
-for columnNumber in range(0,20):
+for columnNumber in range(0,20):    #For some reason i chose 20.. It is bad programming, since it iterates 20 times unnecessarily. change this
     #making column0
     columns.append(column(columnNumber))
     for x in range(0,len(binArrays[columnNumber])):
@@ -192,12 +196,13 @@ for x in columns:
         for z in y.terms:
             if (not z.dontCare) and (not z.tick):
                 primeImplicants.append(z)
-###### essential prime implicants
+###### essential prime implicants -- find positions
 essentialPrimePos=[]
 i=0
 columnCover=[0 for x in range(0,len(mintermArrayWdc))]
 j=0
 primeImplicantPos=[]
+cols2rem=[] #columns to remove
 for x in mintermArrayWdc:
     i=0
     temp=[]
@@ -208,9 +213,61 @@ for x in mintermArrayWdc:
     columnCover[j]=list(temp)
     if len(columnCover[j])==1:
        essentialPrimePos.append(columnCover[j][0])
-    else:
-       primeImplicantPos.append(list(columnCover[j]))
+       cols2rem.append(x);
+#    else:
+#       primeImplicantPos.append(list(columnCover[j]))
     j=j+1  
+
+
+####### essential prime implicants --using the essentialPrimePos, search through columnCover to find columns which are covered by essential primes to remove, and finally remove the rows 
+i=0
+#coverEls2rem=[]
+for column in columnCover:
+    for essprime in essentialPrimePos:
+        if essprime in column:
+           cols2rem.append(mintermArrayWdc[i])
+#        coverEls2rem.append(column);
+    i+=1
+#removing columns and column header
+cols2rem=list(set(cols2rem))
+"""
+columnCoverFinal=list(columnCover)
+for coverEl in coverEls2rem:
+    columnCoverFinal.remove(coverEl)
+"""
+columnListFinal=list(mintermArrayWdc) #mintermArrayWdcFinal - column headers
+for col2rem in cols2rem:
+    columnListFinal.remove(col2rem)
+
+#rows to remove
+primeImplicantsFinal=list(primeImplicants)
+essentialPrimePos=list(set(essentialPrimePos))
+essentialPrimePos.sort(reverse=True)
+if len(essentialPrimePos):
+  for x in essentialPrimePos:
+      del primeImplicantsFinal[x]
+  essentialPrimePos.sort()
+primeImplicants2rem=[]
+for y in range(0,len(primeImplicantsFinal)):
+    intersection = list(set(primeImplicantsFinal[y].decimals[0]).intersection(columnListFinal))
+    if len(intersection)==0:
+       primeImplicants2rem.append(y)
+primeImplicants2rem = sorted(list(set(primeImplicants2rem)),reverse=True)
+for x in primeImplicants2rem:
+    del primeImplicantsFinal[x]
+#parse one last time for primeImplicantPos
+columnCoverFinal=[0 for i in range(0,len(columnListFinal))]
+i=0
+for x in columnListFinal:
+    j=0
+    temp=[]
+    for y in primeImplicantsFinal:
+        if x in y.decimals[0]:
+           temp.append(j)   
+        j+=1
+    columnCoverFinal[i]=list(temp)
+    primeImplicantPos.append(list(temp))
+    i+=1
 
 petrick = petricks.init(primeImplicantPos)
 finalArray = petrick.finalArray[0]
@@ -239,7 +296,7 @@ for minimal in minimals:
         solution.append(primeImplicants[espos])
 
     for pos in minimal:
-        solution.append(primeImplicants[pos])
+        solution.append(primeImplicantsFinal[pos])
     solutions.append(solution)
 
 
@@ -272,26 +329,29 @@ for x in primeImplicants:
     i=i+1
     print ''
 print ''
-print 'Removing Essential Prime Implicants'
-print '-----------------------------------------------------------' 
-print '%15s %10s' % ('',''), 
-for j in range(0,len(mintermArrayWdc)):
-  if len(columnCover[j])>1:
-     print '%5s'%(mintermArrayWdc[j]),
-  else:
-     print '',
-print('')
-i=0
-for x in primeImplicants:
-    print '%15s %10s' % (','.join(map(str,x.decimals[0])), x.bits),
-    for j in range(0,len(mintermArrayWdc)):
-        if len(columnCover[j])>1:           
-            if i in columnCover[j]:
-               print '%5s'%('x'),
-            else:
-               print '%5s'%(''),
-    i=i+1
-    print ''
+if not len(columnListFinal) == len(mintermArrayWdc):
+  print 'Removing Essential Prime Implicants'
+  print '-----------------------------------------------------------' 
+  print '%15s %10s' % ('',''), 
+  for j in range(0,len(columnListFinal)):
+    if len(columnCoverFinal[j])>1:
+       print '%5s'%(columnListFinal[j]),
+    else:
+       print '',
+  print('')
+  i=0
+  for x in primeImplicantsFinal:
+      print '%15s %10s' % (','.join(map(str,x.decimals[0])), x.bits),
+      for j in range(0,len(columnListFinal)):
+          if len(columnCoverFinal[j])>1:           
+              if i in columnCoverFinal[j]:
+                 print '%5s'%('x'),
+              else:
+                 print '%5s'%(''),
+      i=i+1
+      print ''
+else:
+  print 'No Essentials\n'
 ##Show Solutions
 print ''
 print ''
@@ -301,7 +361,7 @@ else:
   print 'Solution:'
 print '-----------------------------------------------------------' 
 i=0
-alphabets=[chr(code) for code in range(ord('a'),ord('z'))]
+alphabets=[chr(code) for code in range(ord(startChar),ord('z')+1)]
 solutionAlphs=[]
 for solution in solutions:
     print 'Solution #%d'%(i+1)
@@ -325,4 +385,4 @@ for solution in solutions:
 ##            columns.append(column(1))
 ##            for x in binArrays[1]:
 ##                #print(x)
-##                columns[1].addElement(minterm(x,1))
+#                columns[1].addElement(minterm(x,1))
