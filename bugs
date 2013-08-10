@@ -3,4 +3,4 @@ BUGS    #solved
 ######################################
 # 1. Allows duplicates
 # 2. Sort them in order
-
+# 3. Error when solution has all essential prime implicants

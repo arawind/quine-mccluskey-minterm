@@ -124,7 +124,7 @@ def checkOnes(term1,term2):
         ok=False
     return ok
 
-for columnNumber in range(0,20):    #For some reason i chose 20.. It is bad programming, since it iterates 20 times unnecessarily. change this
+for columnNumber in range(0,20):    #For some reason i chose 20.. It is bad programming since it iterates 20 times unnecessarily. change this
     #making column0
     columns.append(column(columnNumber))
     for x in range(0,len(binArrays[columnNumber])):
@@ -270,7 +270,12 @@ for x in columnListFinal:
     i+=1
 
 petrick = petricks.init(primeImplicantPos)
-finalArray = petrick.finalArray[0]
+
+if len(petrick.finalArray) > 0 :
+    finalArray = petrick.finalArray[0]
+else:
+    finalArray = [[]]
+# if else condition added to fulfill the case where all the prime implicants are essential prime implicants
 def lenMapper(array):
     if not isinstance(array,list):
        return 1
